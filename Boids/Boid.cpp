@@ -7,7 +7,7 @@ Boid::Boid()
 {
 	m_position = XMFLOAT3(0, 0, 0);
 	m_direction = XMFLOAT3(0, 1, 0);
-	m_speed = 1.0f;
+	m_speed = 20.0f;
 	setScale(1); 
 	createRandomDirection();
 
@@ -50,25 +50,31 @@ void Boid::update(float t, vecBoid* boidList)
 	vTotal = addFloat3(vTotal, vCohesion);
 	vTotal = normaliseFloat3(vTotal);
 
-	// set me
-	// m_direction = ... ;// this should always have a magnitude > 0 - ideally 1
-	// m_position = ... ;
+	
+
+
+	
 	//Convert float to vector
 	XMVECTOR m_tempPosition = XMLoadFloat3(&m_position);
 	XMVECTOR m_tempDirection = XMLoadFloat3(&m_direction);
 	XMVECTOR m_tempCohesion = XMLoadFloat3(&vCohesion);
 	XMVECTOR m_tempSeparation = XMLoadFloat3(&vSeparation);
+	XMVECTOR m_tempTotal = XMLoadFloat3(&vTotal);
 
 	//Calculation
 	m_tempPosition += m_tempDirection * t * m_speed;
-	m_tempDirection = m_tempCohesion + m_tempSeparation;
+	m_tempDirection = m_tempTotal;
+	
+	
+	
+	
 	
 
 
 	//Storing floats
 	XMStoreFloat3(&m_position, m_tempPosition);
-	//XMStoreFloat3(&m_direction, m_tempDirection);
 	XMStoreFloat3(&m_direction, m_tempDirection);
+	m_direction = normaliseFloat3(m_direction);
 
 	DrawableGameObject::update(t);
 }
@@ -78,6 +84,8 @@ XMFLOAT3 Boid::calculateSeparationVector(vecBoid* boidList)
 	XMFLOAT3 nearby = XMFLOAT3(0, 0, 0);
 	if (boidList == nullptr)
 		return nearby;
+
+	//Convert float to vector so I can calculate
 
 	// calculate average position of nearby
 
@@ -91,6 +99,8 @@ XMFLOAT3 Boid::calculateSeparationVector(vecBoid* boidList)
 
 		XMFLOAT3 mePos = m_position;
 		XMFLOAT3 itPos = *boid->getPosition();
+
+		
 
 		XMFLOAT3 directionNearest = subtractFloat3(mePos, itPos);
 		float d = magnitudeFloat3(directionNearest);
@@ -114,7 +124,17 @@ XMFLOAT3 Boid::calculateAlignmentVector(vecBoid* boidList)
 	XMFLOAT3 nearby = XMFLOAT3(0, 0, 0);
 	if (boidList == nullptr)
 		return nearby;
+	
+	
+	for (Boid* boid : *boidList)
+	{
+		nearby = addFloat3(nearby, *boid->getDirection());
 
+	}
+	nearby = divideFloat3(nearby, (float)boidList->size());
+	nearby = subtractFloat3(nearby, m_direction);
+		
+	
 	// your code here
 
 	return normaliseFloat3(nearby); // return the normalised (average) direction of nearby drawables
