@@ -2,12 +2,15 @@
 
 
 #define NEARBY_DISTANCE		200.0f	// how far boids can see
+#define COHESION_WEIGHT     1.0f
+#define	SEPARATION_WEIGHT	1.0f
+#define	ALIGMENT_WEIGHT		3.0f
 
 Boid::Boid()
 {
 	m_position = XMFLOAT3(0, 0, 0);
 	m_direction = XMFLOAT3(0, 1, 0);
-	m_speed = 20.0f;
+	m_speed = 30.0f;
 	setScale(1); 
 	createRandomDirection();
 
@@ -50,42 +53,37 @@ void Boid::update(float t, vecBoid* boidList)
 	vTotal = addFloat3(vTotal, vCohesion);
 	vTotal = normaliseFloat3(vTotal);
 
-	
-
-
-	
 	//Convert float to vector
 	XMVECTOR m_tempPosition = XMLoadFloat3(&m_position);
 	XMVECTOR m_tempDirection = XMLoadFloat3(&m_direction);
-	XMVECTOR m_tempCohesion = XMLoadFloat3(&vCohesion);
-	XMVECTOR m_tempSeparation = XMLoadFloat3(&vSeparation);
-	XMVECTOR m_tempTotal = XMLoadFloat3(&vTotal);
 
 	//Calculation
-	m_tempPosition += m_tempDirection * t * m_speed;
-	m_tempDirection = m_tempTotal;
-	
-	
-	
-	
-	
 
+	float d = magnitudeFloat3(m_direction);
+	
+	if (d > 0 && d != 0)
+	{
+		m_direction = addFloat3(m_direction, vTotal);
+		m_direction = multiplyFloat3(m_direction, t);
+		m_direction = normaliseFloat3(m_direction);
+		m_tempPosition += m_tempDirection * t * m_speed;
+	}
 
 	//Storing floats
 	XMStoreFloat3(&m_position, m_tempPosition);
 	XMStoreFloat3(&m_direction, m_tempDirection);
-	m_direction = normaliseFloat3(m_direction);
 
 	DrawableGameObject::update(t);
 }
 
 XMFLOAT3 Boid::calculateSeparationVector(vecBoid* boidList)
 {
+	
 	XMFLOAT3 nearby = XMFLOAT3(0, 0, 0);
 	if (boidList == nullptr)
 		return nearby;
 
-	//Convert float to vector so I can calculate
+	
 
 	// calculate average position of nearby
 
