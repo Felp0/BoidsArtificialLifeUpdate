@@ -71,30 +71,26 @@ int						g_viewWidth;
 int						g_viewHeight;
 
 vecBoid					g_Boids;
+vecBoid                 g_Predators;
 
 
 #define FISH_COUNT 200
 
 void placeFish()
 {
+
 	HRESULT hr;
-	Boid* fish = new Boid();
-	hr = fish->initMesh(g_pd3dDevice, g_pImmediateContext);
+    Boid* predator = new Boid();
+	hr = predator->initMesh(g_pd3dDevice, g_pImmediateContext);
 	if (FAILED(hr))
 		return;
-	fish->setPosition(XMFLOAT3(0, 0, 0));
-	g_Boids.push_back(fish);
+	predator->setPosition(XMFLOAT3(-30, 0, 0));
+    g_Predators.push_back(predator);
 
-
+    //fishes
     for (int i = 0; i < 10; i++)
     {
-        Boid* fish = new Boid();
-        hr = fish->initMesh(g_pd3dDevice, g_pImmediateContext);
-        if (FAILED(hr))
-            return;
-        fish->setPosition(XMFLOAT3(i * 10, 0, 0));
-        g_Boids.push_back(fish);
-
+   
         for (int j = 0; j < 10; j++)
         {
             Boid* fish = new Boid();
@@ -712,10 +708,14 @@ void Render()
 	for(unsigned int i=0; i< g_Boids.size(); i++)
 	{ 
 		g_Boids[i]->update(t, &g_Boids);
+        g_Predators[0]->update(t, &g_Predators);
 		XMMATRIX vp = g_View * g_Projection;
 		Boid* dob = (Boid*)g_Boids[i];
+		Boid* dop = (Boid*)g_Predators[0];
+		
 
 		dob->checkIsOnScreenAndFix(g_View, g_Projection);
+        dop->checkIsOnScreenAndFix(g_View, g_Projection);
 
 		setupTransformConstantBuffer(i);
 		setupLightingConstantBuffer();
@@ -732,8 +732,12 @@ void Render()
 		g_pImmediateContext->PSSetShaderResources(0, 1, g_Boids[i]->getTextureResourceView() );
 		g_pImmediateContext->PSSetSamplers(0, 1, g_Boids[i]->getTextureSamplerState());
 
+        g_pImmediateContext->PSSetShaderResources(0, 1, g_Predators[0]->getTextureResourceView());
+        g_pImmediateContext->PSSetSamplers(0, 1, g_Predators[0]->getTextureSamplerState());
+
 		// draw 
 		g_Boids[i]->draw(g_pImmediateContext);
+        g_Predators[0]->draw(g_pImmediateContext);
 	}
 
     // Present our back buffer to our front buffer

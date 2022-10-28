@@ -1,16 +1,16 @@
 #include "Boid.h"
 
 
-#define NEARBY_DISTANCE		200.0f	// how far boids can see
+#define NEARBY_DISTANCE		50.0f	// how far boids can see
 #define COHESION_WEIGHT     1.0f
 #define	SEPARATION_WEIGHT	1.0f
-#define	ALIGMENT_WEIGHT		3.0f
+#define	ALIGMENT_WEIGHT		5.0f
 
 Boid::Boid()
 {
 	m_position = XMFLOAT3(0, 0, 0);
 	m_direction = XMFLOAT3(0, 1, 0);
-	m_speed = 30.0f;
+	m_speed = 5.0f;
 	setScale(1); 
 	createRandomDirection();
 
@@ -49,29 +49,37 @@ void Boid::update(float t, vecBoid* boidList)
 	XMFLOAT3  vAlignment = calculateAlignmentVector(&nearBoids);
 	XMFLOAT3  vCohesion = calculateCohesionVector(&nearBoids);
 
+	vSeparation = multiplyFloat3(vSeparation, SEPARATION_WEIGHT);
+	vAlignment = multiplyFloat3(vAlignment, ALIGMENT_WEIGHT);
+	vCohesion = multiplyFloat3(vCohesion, COHESION_WEIGHT);
+	
+
 	XMFLOAT3 vTotal = addFloat3(vSeparation, vAlignment);
 	vTotal = addFloat3(vTotal, vCohesion);
 	vTotal = normaliseFloat3(vTotal);
 
 	//Convert float to vector
-	XMVECTOR m_tempPosition = XMLoadFloat3(&m_position);
-	XMVECTOR m_tempDirection = XMLoadFloat3(&m_direction);
+	/*XMVECTOR m_tempPosition = XMLoadFloat3(&m_position);
+	XMVECTOR m_tempDirection = XMLoadFloat3(&m_direction);*/
 
 	//Calculation
-
-	float d = magnitudeFloat3(m_direction);
-	
-	if (d > 0 && d != 0)
-	{
 		m_direction = addFloat3(m_direction, vTotal);
+
+	if (magnitudeFloat3(m_direction) > 0)
+	{
 		m_direction = multiplyFloat3(m_direction, t);
+		m_direction = multiplyFloat3(m_direction, m_speed);
 		m_direction = normaliseFloat3(m_direction);
-		m_tempPosition += m_tempDirection * t * m_speed;
+		m_position = addFloat3(m_position, m_direction);
+	}
+	else
+	{
+		createRandomDirection();
 	}
 
 	//Storing floats
-	XMStoreFloat3(&m_position, m_tempPosition);
-	XMStoreFloat3(&m_direction, m_tempDirection);
+	//XMStoreFloat3(&m_position, m_tempPosition);
+	//XMStoreFloat3(&m_direction, m_tempDirection);
 
 	DrawableGameObject::update(t);
 }
@@ -97,7 +105,7 @@ XMFLOAT3 Boid::calculateSeparationVector(vecBoid* boidList)
 
 		XMFLOAT3 mePos = m_position;
 		XMFLOAT3 itPos = *boid->getPosition();
-
+		XMFLOAT3 posTry = XMFLOAT3(5, 5, 0);
 		
 
 		XMFLOAT3 directionNearest = subtractFloat3(mePos, itPos);
@@ -129,8 +137,8 @@ XMFLOAT3 Boid::calculateAlignmentVector(vecBoid* boidList)
 		nearby = addFloat3(nearby, *boid->getDirection());
 
 	}
-	nearby = divideFloat3(nearby, (float)boidList->size());
-	nearby = subtractFloat3(nearby, m_direction);
+		nearby = divideFloat3(nearby, (float)boidList->size());
+		//nearby = subtractFloat3(nearby, m_direction);
 		
 	
 	// your code here
