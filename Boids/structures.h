@@ -28,10 +28,12 @@ using namespace DirectX;
 
 #include <vector>
 class Boid;
+class Predator;
 
 using namespace std;
 
 typedef vector<Boid*> vecBoid;
+typedef vector<Predator*> vecPredator;
 
 struct ConstantBuffer
 {

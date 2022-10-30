@@ -1,24 +1,20 @@
 #pragma once
 #include "DrawableGameObject.h"
-class Boid :
+#include "Boid.h"
+
+class Predator:
 	public DrawableGameObject
 {
 public:
-	Boid();
-	~Boid();
+	Predator();
+	~Predator();
 
 	XMFLOAT3*							getDirection() { return &m_direction; }
-	void								checkIsOnScreenAndFix(const XMMATRIX&  view, const XMMATRIX&  proj);
-	void								update(float t, vecBoid* drawList);
+	void								checkIsOnScreenAndFix(const XMMATRIX& view, const XMMATRIX& proj);
+	void								update(float t,vecBoid* boidList, vecPredator* predatorList);
 
 protected:
 	void								setDirection(XMFLOAT3 direction);
-
-	vecBoid								nearbyBoids(vecBoid* boidList);
-	XMFLOAT3							calculateSeparationVector(vecBoid* drawList);
-	XMFLOAT3							calculateAlignmentVector(vecBoid* drawList);
-	XMFLOAT3							calculateCohesionVector(vecBoid* drawList);
-	void								createRandomDirection();
 
 	XMFLOAT3							addFloat3(XMFLOAT3& f1, XMFLOAT3& f2);
 	XMFLOAT3							subtractFloat3(XMFLOAT3& f1, XMFLOAT3& f2);
@@ -26,9 +22,12 @@ protected:
 	XMFLOAT3							multiplyFloat3(XMFLOAT3& f1, const float scalar);
 	XMFLOAT3							divideFloat3(XMFLOAT3& f1, const float scalar);
 	float								magnitudeFloat3(XMFLOAT3& f1);
+	void								createRandomDirection();
 
 	XMFLOAT3							m_direction;
 	float								m_speed;
-	//unsigned int*						m_nearbyDrawables;
+
+	Boid*								m_boid;
+
 };
 

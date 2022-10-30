@@ -18,6 +18,7 @@
 
 #include <time.h>  
 #include "Boid.h"
+#include "Predator.h"
 
 
 //--------------------------------------------------------------------------------------
@@ -71,7 +72,7 @@ int						g_viewWidth;
 int						g_viewHeight;
 
 vecBoid					g_Boids;
-vecBoid                 g_Predators;
+vecPredator             g_Predators;
 
 
 #define FISH_COUNT 200
@@ -80,12 +81,7 @@ void placeFish()
 {
 
 	HRESULT hr;
-    Boid* predator = new Boid();
-	hr = predator->initMesh(g_pd3dDevice, g_pImmediateContext);
-	if (FAILED(hr))
-		return;
-	predator->setPosition(XMFLOAT3(-30, 0, 0));
-    g_Predators.push_back(predator);
+    
 
     //fishes
     for (int i = 0; i < 10; i++)
@@ -104,6 +100,17 @@ void placeFish()
     }
 
 
+}
+
+void placePredator()
+{
+    HRESULT hr;
+    Predator* predator = new Predator();
+    hr = predator->initMesh(g_pd3dDevice, g_pImmediateContext);
+    if (FAILED(hr))
+        return;
+    predator->setPosition(XMFLOAT3(-10, 0, 0));
+    g_Predators.push_back(predator);
 }
 
 //--------------------------------------------------------------------------------------
@@ -517,6 +524,7 @@ HRESULT		InitMesh()
 
 
 	placeFish();
+    placePredator();
 
 	return hr;
 }
@@ -550,7 +558,13 @@ void CleanupDevice()
 		delete g_Boids[i];
 	}
 
+    for (unsigned int i = 0; i < g_Predators.size(); i++)
+    {
+        delete g_Predators[i];
+    }
+
 	g_Boids.clear();
+    g_Predators.clear();
 
     // Remove any bound render target or depth/stencil buffer
     ID3D11RenderTargetView* nullViews[] = { nullptr };
@@ -705,17 +719,19 @@ void Render()
     // Clear the depth buffer to 1.0 (max depth)
     g_pImmediateContext->ClearDepthStencilView( g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0 );
 
+    //Boids/Predator Render
+    XMMATRIX vp = g_View * g_Projection;
+
+
+
 	for(unsigned int i=0; i< g_Boids.size(); i++)
 	{ 
 		g_Boids[i]->update(t, &g_Boids);
-        g_Predators[0]->update(t, &g_Predators);
-		XMMATRIX vp = g_View * g_Projection;
+        
 		Boid* dob = (Boid*)g_Boids[i];
-		Boid* dop = (Boid*)g_Predators[0];
-		
+        
 
 		dob->checkIsOnScreenAndFix(g_View, g_Projection);
-        dop->checkIsOnScreenAndFix(g_View, g_Projection);
 
 		setupTransformConstantBuffer(i);
 		setupLightingConstantBuffer();
@@ -732,13 +748,40 @@ void Render()
 		g_pImmediateContext->PSSetShaderResources(0, 1, g_Boids[i]->getTextureResourceView() );
 		g_pImmediateContext->PSSetSamplers(0, 1, g_Boids[i]->getTextureSamplerState());
 
-        g_pImmediateContext->PSSetShaderResources(0, 1, g_Predators[0]->getTextureResourceView());
-        g_pImmediateContext->PSSetSamplers(0, 1, g_Predators[0]->getTextureSamplerState());
+       
+      
 
 		// draw 
 		g_Boids[i]->draw(g_pImmediateContext);
-        g_Predators[0]->draw(g_pImmediateContext);
 	}
+    for (unsigned int i = 0; i < g_Predators.size(); i++)
+    {
+        g_Predators[i]->update(t, &g_Predators);
+        Predator* pre = (Predator*)g_Predators[i];
+
+       
+
+        pre->checkIsOnScreenAndFix(g_View, g_Projection);
+
+        setupTransformConstantBuffer(i);
+        setupLightingConstantBuffer();
+        setupMaterialConstantBuffer(i);
+
+        g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
+        g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
+
+        g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
+        g_pImmediateContext->PSSetConstantBuffers(1, 1, &g_pMaterialConstantBuffer);
+        g_pImmediateContext->PSSetConstantBuffers(2, 1, &g_pLightConstantBuffer);
+
+        g_pImmediateContext->PSSetShaderResources(0, 1, g_Predators[i]->getTextureResourceView());
+        g_pImmediateContext->PSSetSamplers(0, 1, g_Predators[i]->getTextureSamplerState());
+
+
+        //draw
+        g_Predators[i]->draw(g_pImmediateContext);
+        
+    }
 
     // Present our back buffer to our front buffer
     g_pSwapChain->Present( 0, 0 );

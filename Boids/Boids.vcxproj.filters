@@ -9,6 +9,7 @@
     <ClCompile Include="DrawableGameObject.cpp">
       <Filter>Core %28no need to alter%29</Filter>
     </ClCompile>
+    <ClCompile Include="Predator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Boid.h" />
@@ -27,6 +28,7 @@
     <ClInclude Include="main.h">
       <Filter>Core %28no need to alter%29</Filter>
     </ClInclude>
+    <ClInclude Include="Predator.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\floor.dds">
