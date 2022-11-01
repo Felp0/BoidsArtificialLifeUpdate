@@ -3,8 +3,8 @@
 
 #define NEARBY_DISTANCE		50.0f	// how far boids can see
 #define COHESION_WEIGHT     1.0f
-#define	SEPARATION_WEIGHT	1.0f
-#define	ALIGMENT_WEIGHT		5.0f
+#define	SEPARATION_WEIGHT	1.4f
+#define	ALIGMENT_WEIGHT		4.0f
 
 Boid::Boid()
 {
@@ -12,6 +12,7 @@ Boid::Boid()
 	m_direction = XMFLOAT3(0, 1, 0);
 	m_speed = 5.0f;
 	setScale(1); 
+	setColour(XMFLOAT4(0,0,0,0));
 	createRandomDirection();
 
 }
@@ -56,7 +57,7 @@ void Boid::update(float t, vecBoid* boidList)
 
 	XMFLOAT3 vTotal = addFloat3(vSeparation, vAlignment);
 	vTotal = addFloat3(vTotal, vCohesion);
-	vTotal = normaliseFloat3(vTotal);
+	//vTotal = normaliseFloat3(vTotal);
 
 	//Convert float to vector
 	/*XMVECTOR m_tempPosition = XMLoadFloat3(&m_position);

@@ -79,16 +79,14 @@ vecPredator             g_Predators;
 
 void placeFish()
 {
-
-	HRESULT hr;
-    
-
+   
     //fishes
     for (int i = 0; i < 10; i++)
     {
    
         for (int j = 0; j < 10; j++)
         {
+	        HRESULT hr;
             Boid* fish = new Boid();
             hr = fish->initMesh(g_pd3dDevice, g_pImmediateContext);
             if (FAILED(hr))
@@ -671,19 +669,37 @@ void setupLightingConstantBuffer()
 
 void setupMaterialConstantBuffer(const unsigned int index)
 {
+    //Boids
 	MaterialPropertiesConstantBuffer mcb = g_Boids[index]->getMaterial();
 	g_pImmediateContext->UpdateSubresource(g_pMaterialConstantBuffer, 0, nullptr, &mcb, 0, 0);
+
+}
+
+void SetupPredatorMaterial()
+{
+    MaterialPropertiesConstantBuffer mcp = g_Predators[0]->getMaterial();
+    g_pImmediateContext->UpdateSubresource(g_pMaterialConstantBuffer, 0, nullptr, &mcp, 0, 0);
 }
 
 void setupTransformConstantBuffer(const unsigned int index)
 {
-	
+	//Boids
 	ConstantBuffer cb1;
 	cb1.mWorld = XMMatrixTranspose(XMLoadFloat4x4(g_Boids[index]->getTransform()));
 	cb1.mView = XMMatrixTranspose(g_View);
 	cb1.mProjection = XMMatrixTranspose(g_Projection);
 	cb1.vOutputColor = XMFLOAT4(0, 0, 0, 0);
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cb1, 0, 0);
+
+}
+void SetupPredatorConstantBuffer()
+{
+    ConstantBuffer cb2;
+    cb2.mWorld = XMMatrixTranspose(XMLoadFloat4x4(g_Predators[0]->getTransform()));
+    cb2.mView = XMMatrixTranspose(g_View);
+    cb2.mProjection = XMMatrixTranspose(g_Projection);
+    cb2.vOutputColor = XMFLOAT4(0, 0, 0, 0);
+    g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cb2, 0, 0);
 
 }
 
@@ -754,6 +770,9 @@ void Render()
 		// draw 
 		g_Boids[i]->draw(g_pImmediateContext);
 	}
+
+  
+
     for (unsigned int i = 0; i < g_Predators.size(); i++)
     {
         g_Predators[i]->update(t, &g_Predators);
@@ -763,9 +782,9 @@ void Render()
 
         pre->checkIsOnScreenAndFix(g_View, g_Projection);
 
-        setupTransformConstantBuffer(i);
+        SetupPredatorConstantBuffer();
         setupLightingConstantBuffer();
-        setupMaterialConstantBuffer(i);
+        SetupPredatorMaterial();
 
         g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
         g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
@@ -774,12 +793,12 @@ void Render()
         g_pImmediateContext->PSSetConstantBuffers(1, 1, &g_pMaterialConstantBuffer);
         g_pImmediateContext->PSSetConstantBuffers(2, 1, &g_pLightConstantBuffer);
 
-        g_pImmediateContext->PSSetShaderResources(0, 1, g_Predators[i]->getTextureResourceView());
-        g_pImmediateContext->PSSetSamplers(0, 1, g_Predators[i]->getTextureSamplerState());
+        g_pImmediateContext->PSSetShaderResources(0, 1, g_Predators[0]->getTextureResourceView());
+        g_pImmediateContext->PSSetSamplers(0, 1, g_Predators[0]->getTextureSamplerState());
 
 
         //draw
-        g_Predators[i]->draw(g_pImmediateContext);
+        g_Predators[0]->draw(g_pImmediateContext);
         
     }
 

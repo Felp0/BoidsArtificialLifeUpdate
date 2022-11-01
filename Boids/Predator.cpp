@@ -7,8 +7,11 @@ Predator::Predator()
 	m_position = XMFLOAT3(0, 0, 0);
 	m_direction = XMFLOAT3(0, 1, 0);
 	m_speed = 3.0f;
-	setScale(1);
+	setScale(3);
+	setColour(XMFLOAT4(255, 0, 0, 0));
 	createRandomDirection();
+
+	
 }
 
 Predator::~Predator()
@@ -32,9 +35,9 @@ void Predator::setDirection(XMFLOAT3 direction)
 	XMStoreFloat3(&m_direction, v);
 }
 
-void Predator::update(float t,vecBoid* boidList, vecPredator* predatorList)
+void Predator::update(float t, vecPredator* predatorList)
 {
-
+	m_direction = XMFLOAT3(0, 1, 0);
 	//direction calculation
 	if (magnitudeFloat3(m_direction) > 0)
 	{

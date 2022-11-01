@@ -11,7 +11,7 @@ public:
 
 	XMFLOAT3*							getDirection() { return &m_direction; }
 	void								checkIsOnScreenAndFix(const XMMATRIX& view, const XMMATRIX& proj);
-	void								update(float t,vecBoid* boidList, vecPredator* predatorList);
+	void								update(float t, vecPredator* predatorList);
 
 protected:
 	void								setDirection(XMFLOAT3 direction);

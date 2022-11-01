@@ -46,6 +46,7 @@ public:
 	void								setPosition(XMFLOAT3 position);
 	XMFLOAT3*							getPosition() { return &m_position; }
 	void								setScale(const float scale) { m_scale = scale;  }
+	void								setColour(XMFLOAT4 colour) { m_ambientMaterial = colour; }
 
 
 
@@ -58,6 +59,7 @@ protected:
 	ID3D11SamplerState *				m_pSamplerLinear;
 	MaterialPropertiesConstantBuffer	m_material;
 	XMFLOAT3							m_position;
+	XMFLOAT4							m_ambientMaterial;
 	float								m_scale;
 
 
