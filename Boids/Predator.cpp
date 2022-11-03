@@ -6,6 +6,7 @@ Predator::Predator()
 {
 	m_position = XMFLOAT3(0, 0, 0);
 	m_direction = XMFLOAT3(0, 1, 0);
+	m_futurePoint = XMFLOAT3(0, 0, 0);
 	m_speed = 3.0f;
 	setScale(3);
 	setColour(XMFLOAT4(255, 0, 0, 0));
@@ -35,14 +36,34 @@ void Predator::setDirection(XMFLOAT3 direction)
 	XMStoreFloat3(&m_direction, v);
 }
 
-void Predator::update(float t, vecPredator* predatorList)
+void Predator::pursuit(Boid* fish)
 {
-	m_direction = XMFLOAT3(0, 1, 0);
+	/*XMVECTOR vfuturePoint = XMLoadFloat3(&m_futurePoint);
+	XMVECTOR vposition = XMLoadFloat3(&m_position);
+	XMVECTOR vdirection = XMLoadFloat3(&m_direction);
+	XMVECTOR vspeed = XMLoadFloat(&m_speed);*/
+
+
+	
+
+
+
+	m_futurePoint = addFloat3(*fish->getPosition(), *fish->getDirection());
+	m_direction = subtractFloat3(m_futurePoint, m_position);
+	m_direction = normaliseFloat3(m_direction);
+	m_direction = multiplyFloat3(m_direction, 2.0f);
+
+}
+
+void Predator::update(float t,Boid* fish, vecPredator* predatorList)
+{
+	//m_direction = XMFLOAT3(1,0, 0);
 	//direction calculation
+	pursuit(fish);
 	if (magnitudeFloat3(m_direction) > 0)
 	{
 		m_direction = multiplyFloat3(m_direction, t);
-		m_direction = multiplyFloat3(m_direction, m_speed);
+		m_direction = multiplyFloat3(m_direction ,m_speed);
 		m_direction = normaliseFloat3(m_direction);
 		m_position = addFloat3(m_position, m_direction);
 	}

@@ -11,7 +11,7 @@ public:
 
 	XMFLOAT3*							getDirection() { return &m_direction; }
 	void								checkIsOnScreenAndFix(const XMMATRIX& view, const XMMATRIX& proj);
-	void								update(float t, vecPredator* predatorList);
+	void								update(float t,Boid* fish, vecPredator* predatorList);
 
 protected:
 	void								setDirection(XMFLOAT3 direction);
@@ -23,8 +23,10 @@ protected:
 	XMFLOAT3							divideFloat3(XMFLOAT3& f1, const float scalar);
 	float								magnitudeFloat3(XMFLOAT3& f1);
 	void								createRandomDirection();
+	void								pursuit(Boid* fish);
 
 	XMFLOAT3							m_direction;
+	XMFLOAT3							m_futurePoint;
 	float								m_speed;
 
 	Boid*								m_boid;

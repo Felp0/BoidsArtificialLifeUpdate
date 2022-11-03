@@ -1,16 +1,17 @@
 #include "Boid.h"
+#include "Predator.h"
 
 
 #define NEARBY_DISTANCE		50.0f	// how far boids can see
 #define COHESION_WEIGHT     1.0f
 #define	SEPARATION_WEIGHT	1.4f
-#define	ALIGMENT_WEIGHT		4.0f
+#define	ALIGMENT_WEIGHT		3.0f
 
 Boid::Boid()
 {
 	m_position = XMFLOAT3(0, 0, 0);
 	m_direction = XMFLOAT3(0, 1, 0);
-	m_speed = 5.0f;
+	m_speed = 100.0f;
 	setScale(1); 
 	setColour(XMFLOAT4(0,0,0,0));
 	createRandomDirection();
@@ -38,9 +39,21 @@ void Boid::setDirection(XMFLOAT3 direction)
 	XMStoreFloat3(&m_direction, v);
 }
 
+void Boid::flee(Predator* predator)
+{
+	
+
+	if (distanceDouble(*predator->getPosition()) < 10.f)
+	{
+		m_direction = subtractFloat3(*predator->getPosition(), m_position);
+		m_direction = normaliseFloat3(m_direction);
+		m_direction = multiplyFloat3(m_direction, -1.0f);
+	}
+}
+
 
 #define DIRECTION_DELTA 0.1f
-void Boid::update(float t, vecBoid* boidList)
+void Boid::update(float t,Predator* predator, vecBoid* boidList)
 {
 	// create a list of nearby boids
 	vecBoid nearBoids = nearbyBoids(boidList);
@@ -71,6 +84,7 @@ void Boid::update(float t, vecBoid* boidList)
 		m_direction = multiplyFloat3(m_direction, t);
 		m_direction = multiplyFloat3(m_direction, m_speed);
 		m_direction = normaliseFloat3(m_direction);
+		flee(predator);
 		m_position = addFloat3(m_position, m_direction);
 	}
 	else
@@ -207,6 +221,25 @@ XMFLOAT3 Boid::divideFloat3(XMFLOAT3& f1, const float scalar)
 	out.z = f1.z / scalar;
 
 	return out;
+}
+
+XMFLOAT3 Boid::distanceFloat3(const XMFLOAT3& f1)
+{
+	XMFLOAT3 out;
+	out.x = sqrt(f1.x - m_position.x * f1.x - m_position.x);
+	out.y = sqrt(f1.y - m_position.y * f1.y - m_position.y) ;
+	out.z = sqrt(f1.z - m_position.z * f1.z - m_position.z);
+
+	return out;
+}
+
+double Boid::distanceDouble(XMFLOAT3& f1)
+{
+	double xDisplacement = f1.x - m_position.x;
+	double yDisplacement = f1.y - m_position.y;
+	double zDisplacement = f1.z - m_position.z;
+
+	return sqrt(xDisplacement * xDisplacement + yDisplacement * yDisplacement + zDisplacement * zDisplacement);
 }
 
 float Boid::magnitudeFloat3(XMFLOAT3& f1)

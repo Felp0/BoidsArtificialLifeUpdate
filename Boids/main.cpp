@@ -107,7 +107,7 @@ void placePredator()
     hr = predator->initMesh(g_pd3dDevice, g_pImmediateContext);
     if (FAILED(hr))
         return;
-    predator->setPosition(XMFLOAT3(-10, 0, 0));
+    predator->setPosition(XMFLOAT3(-60, 0, 0));
     g_Predators.push_back(predator);
 }
 
@@ -742,7 +742,7 @@ void Render()
 
 	for(unsigned int i=0; i< g_Boids.size(); i++)
 	{ 
-		g_Boids[i]->update(t, &g_Boids);
+		g_Boids[i]->update(t,g_Predators[0], &g_Boids);
         
 		Boid* dob = (Boid*)g_Boids[i];
         
@@ -775,7 +775,7 @@ void Render()
 
     for (unsigned int i = 0; i < g_Predators.size(); i++)
     {
-        g_Predators[i]->update(t, &g_Predators);
+        g_Predators[i]->update(t, g_Boids[0], &g_Predators);
         Predator* pre = (Predator*)g_Predators[i];
 
        
