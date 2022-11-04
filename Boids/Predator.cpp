@@ -59,7 +59,7 @@ void Predator::update(float t,Boid* fish, vecPredator* predatorList)
 {
 	//m_direction = XMFLOAT3(1,0, 0);
 	//direction calculation
-	pursuit(fish);
+		pursuit(fish);
 	if (magnitudeFloat3(m_direction) > 0)
 	{
 		m_direction = multiplyFloat3(m_direction, t);

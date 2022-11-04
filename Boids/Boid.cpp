@@ -4,8 +4,8 @@
 
 #define NEARBY_DISTANCE		50.0f	// how far boids can see
 #define COHESION_WEIGHT     1.0f
-#define	SEPARATION_WEIGHT	1.4f
-#define	ALIGMENT_WEIGHT		3.0f
+#define	SEPARATION_WEIGHT	1.0f
+#define	ALIGMENT_WEIGHT		4.0f
 
 Boid::Boid()
 {
@@ -43,7 +43,7 @@ void Boid::flee(Predator* predator)
 {
 	
 
-	if (distanceDouble(*predator->getPosition()) < 10.f)
+	if (distanceDouble(*predator->getPosition()) < 40.f)
 	{
 		m_direction = subtractFloat3(*predator->getPosition(), m_position);
 		m_direction = normaliseFloat3(m_direction);
