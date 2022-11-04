@@ -25,6 +25,7 @@ protected:
 	void								createRandomDirection();
 	void								pursuit(Boid* fish);
 
+	XMFLOAT3							m_test;
 	XMFLOAT3							m_direction;
 	XMFLOAT3							m_futurePoint;
 	float								m_speed;
