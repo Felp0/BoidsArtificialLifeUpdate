@@ -9,7 +9,7 @@ Predator::Predator()
 	m_futurePoint = XMFLOAT3(0, 0, 0);
 	m_speed = 1.0f;
 	setScale(3);
-	setColour(XMFLOAT4(255, 0, 0, 0));
+	setColour(XMFLOAT4(0, 0, 255, 0));
 	createRandomDirection();
 
 	
@@ -51,7 +51,7 @@ void Predator::pursuit(Boid* fish)
 	m_futurePoint = addFloat3(*fish->getPosition(), *fish->getDirection());
 	m_direction = subtractFloat3(m_futurePoint, m_position);
 	m_direction = normaliseFloat3(m_direction);
-	m_direction = multiplyFloat3(m_direction, 2.0f);
+	m_direction = multiplyFloat3(m_direction, 1.0f);
 
 }
 

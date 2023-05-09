@@ -2,11 +2,10 @@
 #include "Predator.h"
 
 
-#define NEARBY_DISTANCE		50.0f	// how far boids can see
-#define COHESION_WEIGHT     1.0f
-#define	SEPARATION_WEIGHT	1.0f
-#define	ALIGMENT_WEIGHT		1.0f
-
+#define NEARBY_DISTANCE		40.0f	// how far boids can see
+#define COHESION_WEIGHT     0.6f
+#define	SEPARATION_WEIGHT	0.7f
+#define	ALIGMENT_WEIGHT		1.5f
 Boid::Boid()
 {
 	m_position = XMFLOAT3(0, 0, 0);
@@ -82,7 +81,7 @@ void Boid::update(float t,Predator* predator, vecBoid* boidList)
 	if (magnitudeFloat3(m_direction) > 0)
 	{
 		m_direction = multiplyFloat3(m_direction, t);
-		m_direction = multiplyFloat3(m_direction, m_speed);
+		m_direction = multiplyFloat3(m_direction, 500.0f);
 		m_direction = normaliseFloat3(m_direction);
 		flee(predator);
 		m_position = addFloat3(m_position, m_direction);
