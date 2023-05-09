@@ -4,10 +4,10 @@
 
 Predator::Predator()
 {
-	m_position = XMFLOAT3(0, 0, 0);
+	m_position = XMFLOAT3(-10, 0, 0);
 	m_direction = XMFLOAT3(0, 1, 0);
 	m_futurePoint = XMFLOAT3(0, 0, 0);
-	m_speed = 3.0f;
+	m_speed = 1.0f;
 	setScale(3);
 	setColour(XMFLOAT4(255, 0, 0, 0));
 	createRandomDirection();

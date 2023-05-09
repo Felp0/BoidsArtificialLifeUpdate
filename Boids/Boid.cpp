@@ -5,13 +5,13 @@
 #define NEARBY_DISTANCE		50.0f	// how far boids can see
 #define COHESION_WEIGHT     1.0f
 #define	SEPARATION_WEIGHT	1.0f
-#define	ALIGMENT_WEIGHT		4.0f
+#define	ALIGMENT_WEIGHT		1.0f
 
 Boid::Boid()
 {
 	m_position = XMFLOAT3(0, 0, 0);
 	m_direction = XMFLOAT3(0, 1, 0);
-	m_speed = 100.0f;
+	m_speed = 5000.0f;
 	setScale(1); 
 	setColour(XMFLOAT4(0,0,0,0));
 	createRandomDirection();
